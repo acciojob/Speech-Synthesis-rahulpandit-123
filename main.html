@@ -29,14 +29,195 @@
     </div>
 
 <script>
-  const msg = new SpeechSynthesisUtterance();
-  let voices = [];
-  const voicesDropdown = document.querySelector('[name="voice"]');
-  const options = document.querySelectorAll('[type="range"], [name="text"]');
-  const speakButton = document.querySelector('#speak');
-  const stopButton = document.querySelector('#stop');
+ const msg = new SpeechSynthesisUtterance();
 
-  //Your code goes here
+
+// elements
+
+const voicesDropdown = document.querySelector('[name="voice"]');
+
+const text = document.querySelector('[name="text"]');
+
+const pitch = document.querySelector('#pitch');
+
+const rate = document.querySelector('#rate');
+
+const pitchValue = document.querySelector('.pitch-value');
+
+const rateValue = document.querySelector('.rate-value');
+
+
+const speakButton = document.querySelector('#speak');
+
+const stopButton = document.querySelector('#stop');
+
+
+
+// speech api
+
+const api = window.speechSynthesis;
+
+
+// global voices
+
+let voices = [];
+
+
+
+
+
+// store voices
+
+function voicestoring(){
+
+
+    voices = api.getVoices();
+
+
+    voicesDropdown.innerHTML = "";
+
+
+    for(const voice of voices){
+
+
+        let option =
+        document.createElement("option");
+
+
+        option.textContent =
+        `${voice.name} (${voice.lang})`;
+
+
+
+        option.setAttribute(
+            "data-name",
+            voice.name
+        );
+
+
+        voicesDropdown.appendChild(option);
+
+
+    }
+
+
+}
+
+
+
+// load voices
+
+voicestoring();
+
+
+api.addEventListener(
+    "voiceschanged",
+    voicestoring
+);
+
+
+
+
+
+
+// speak
+
+speakButton.addEventListener(
+"click",
+()=>{
+
+
+    const speakingcontent =
+    new SpeechSynthesisUtterance(
+        text.value
+    );
+
+
+
+    let selectedVoice =
+    voicesDropdown
+    .selectedOptions[0]
+    .getAttribute("data-name");
+
+
+
+    for(const voice of voices){
+
+
+        if(voice.name === selectedVoice){
+
+            speakingcontent.voice = voice;
+
+            break;
+
+        }
+
+    }
+
+
+
+    speakingcontent.volume = 1;
+
+    speakingcontent.rate =
+    rate.value;
+
+
+    speakingcontent.pitch =
+    pitch.value;
+
+
+
+    api.speak(
+        speakingcontent
+    );
+
+
+});
+
+
+
+
+
+
+
+// stop
+
+stopButton.addEventListener(
+"click",
+()=>{
+
+    api.cancel();
+
+});
+
+
+
+
+
+
+
+// range values
+
+pitch.addEventListener(
+"input",
+()=>{
+
+    pitchValue.textContent =
+    pitch.value;
+
+});
+
+
+
+rate.addEventListener(
+"input",
+()=>{
+
+    rateValue.textContent =
+    rate.value;
+
+});
+  
 </script>
 
 </body>
